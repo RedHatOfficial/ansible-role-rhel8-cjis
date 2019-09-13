@@ -1,16 +1,2 @@
-sshd_listening_port: '22'
-sshd_idle_timeout_value: '1800'
-var_sshd_set_keepalive: '0'
-inactivity_timeout_value: '1800'
-var_system_crypto_policy: FIPS
-var_auditd_max_log_file: '6'
-var_auditd_num_logs: '5'
-var_auditd_action_mail_acct: root
-var_auditd_admin_space_left_action: single
-var_auditd_space_left_action: email
-var_auditd_max_log_file_action: rotate
-var_accounts_max_concurrent_login_sessions: '3'
-var_password_pam_minlen: '12'
-var_password_pam_difok: '6'
-var_account_disable_post_pw_expiration: '0'
-var_accounts_minimum_age_login_defs: '1'
+---
+# defaults file for rhel8_cjis
