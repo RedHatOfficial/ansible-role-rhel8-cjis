@@ -1,6 +1,27 @@
 ---
 # defaults file for rhel8_cjis
 
+inactivity_timeout_value: true
+sshd_idle_timeout_value: true
+sshd_listening_port: true
+sysctl_net_ipv4_conf_all_accept_redirects_value: true
+sysctl_net_ipv4_conf_default_accept_redirects_value: true
+sysctl_net_ipv4_conf_default_accept_source_route_value: true
+sysctl_net_ipv4_icmp_echo_ignore_broadcasts_value: true
+sysctl_net_ipv4_tcp_syncookies_value: true
+var_account_disable_post_pw_expiration: true
+var_accounts_max_concurrent_login_sessions: true
+var_accounts_minimum_age_login_defs: true
+var_auditd_action_mail_acct: true
+var_auditd_admin_space_left_action: true
+var_auditd_max_log_file: true
+var_auditd_max_log_file_action: true
+var_auditd_num_logs: true
+var_auditd_space_left_action: true
+var_password_pam_difok: true
+var_password_pam_minlen: true
+var_sshd_set_keepalive: true
+var_system_crypto_policy: true
 account_disable_post_pw_expiration: true
 accounts_max_concurrent_login_sessions: true
 accounts_minimum_age_login_defs: true
@@ -22,6 +43,7 @@ audit_rules_dac_modification_lsetxattr: true
 audit_rules_dac_modification_removexattr: true
 audit_rules_dac_modification_setxattr: true
 audit_rules_privileged_commands: true
+auditd_audispd_syslog_plugin_activated: true
 auditd_data_retention_action_mail_acct: true
 auditd_data_retention_admin_space_left_action: true
 auditd_data_retention_max_log_file: true
@@ -35,7 +57,6 @@ dconf_gnome_screensaver_idle_activation_enabled: true
 dconf_gnome_screensaver_idle_delay: true
 dconf_gnome_screensaver_lock_enabled: true
 dconf_gnome_screensaver_mode_blank: true
-dconf_use_text_backend: true
 disable_host_auth: true
 disable_prelink: true
 disable_strategy: true
@@ -55,6 +76,7 @@ file_permissions_etc_group: true
 file_permissions_etc_passwd: true
 file_permissions_etc_shadow: true
 firewalld_sshd_port_enabled: true
+grub2_audit_argument: true
 high_complexity: true
 high_disruption: true
 high_severity: true
@@ -88,4 +110,11 @@ sshd_do_not_permit_user_env: true
 sshd_enable_warning_banner: true
 sshd_set_idle_timeout: true
 sshd_set_keepalive: true
+sysctl_net_ipv4_conf_all_accept_redirects: true
+sysctl_net_ipv4_conf_all_send_redirects: true
+sysctl_net_ipv4_conf_default_accept_redirects: true
+sysctl_net_ipv4_conf_default_accept_source_route: true
+sysctl_net_ipv4_conf_default_send_redirects: true
+sysctl_net_ipv4_icmp_echo_ignore_broadcasts: true
+sysctl_net_ipv4_tcp_syncookies: true
 unknown_strategy: true
