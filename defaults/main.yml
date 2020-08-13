@@ -1,25 +1,25 @@
 ---
 # defaults file for rhel8_cjis
-var_auditd_num_logs: '5'
-var_auditd_max_log_file: '6'
-var_auditd_action_mail_acct: root
-var_auditd_space_left_action: email
-var_auditd_admin_space_left_action: single
-var_auditd_max_log_file_action: rotate
-sysctl_net_ipv4_conf_default_accept_source_route_value: '0'
-sysctl_net_ipv4_tcp_syncookies_value: '1'
 sysctl_net_ipv4_icmp_echo_ignore_broadcasts_value: '1'
 sysctl_net_ipv4_conf_default_accept_redirects_value: '0'
 sysctl_net_ipv4_conf_all_accept_redirects_value: '0'
+sysctl_net_ipv4_conf_default_accept_source_route_value: '0'
+sysctl_net_ipv4_tcp_syncookies_value: '1'
 inactivity_timeout_value: '1800'
 var_system_crypto_policy: FIPS
-var_account_disable_post_pw_expiration: '0'
 var_accounts_minimum_age_login_defs: '1'
+var_account_disable_post_pw_expiration: '0'
 var_password_pam_difok: '6'
 var_password_pam_minlen: '12'
 var_accounts_max_concurrent_login_sessions: '3'
-var_sshd_set_keepalive: '0'
+var_auditd_action_mail_acct: root
+var_auditd_space_left_action: email
+var_auditd_max_log_file_action: rotate
+var_auditd_admin_space_left_action: single
+var_auditd_num_logs: '5'
+var_auditd_max_log_file: '6'
 sshd_listening_port: '22'
+var_sshd_set_keepalive: '0'
 sshd_idle_timeout_value: '1800'
 account_disable_post_pw_expiration: true
 accounts_max_concurrent_login_sessions: true
