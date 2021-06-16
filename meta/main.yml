@@ -2,7 +2,6 @@ galaxy_info:
   role_name: rhel8_cjis
   author: ComplianceAsCode development team
   description: Criminal Justice Information Services (CJIS) Security Policy
-  company: Red Hat, Inc.
 
   issue_tracker_url: https://github.com/ComplianceAsCode/content/issues
 
@@ -24,9 +23,10 @@ galaxy_info:
   - security
   - compliance
   - complianceascode
-  - fbi
-  - cjis
   - redhatofficial
   - redhat
+  - rhel8
+  - cjis
+
 
 dependencies: []
