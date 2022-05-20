@@ -283,7 +283,7 @@
   tags:
   - CCE-80844-4
   - CJIS-5.10.1.3
-  - DISA-STIG-RHEL-08-010360
+  - DISA-STIG-RHEL-08-010359
   - NIST-800-53-CM-6(a)
   - PCI-DSS-Req-11.5
   - enable_strategy
@@ -592,7 +592,7 @@
     regexp: ^\s*CRYPTO_POLICY.*$
   tags:
   - CCE-80939-2
-  - DISA-STIG-RHEL-08-010020
+  - DISA-STIG-RHEL-08-010287
   - NIST-800-53-AC-17(2)
   - NIST-800-53-AC-17(a)
   - NIST-800-53-CM-6(a)
@@ -1439,16 +1439,16 @@
   - NIST-800-53-SI-2(c)
   - PCI-DSS-Req-6.2
   - high_disruption
-  - high_severity
   - low_complexity
+  - medium_severity
   - patch_strategy
   - reboot_required
   - security_patches_up_to_date
   - skip_ansible_lint
   when:
   - high_disruption | bool
-  - high_severity | bool
   - low_complexity | bool
+  - medium_severity | bool
   - patch_strategy | bool
   - reboot_required | bool
   - security_patches_up_to_date | bool
@@ -2448,12 +2448,8 @@
   - reboot_required | bool
   - restrict_strategy | bool
 
-- name: Get current kernel parameters
-  ansible.builtin.shell:
-    cmd: /usr/bin/grub2-editenv - list | grep "kernelopts="
-  register: kernelopts
-  ignore_errors: true
-  changed_when: false
+- name: Update grub defaults and the bootloader menu
+  command: /sbin/grubby --update-kernel=ALL --args="audit=1"
   when:
   - grub2_audit_argument | bool
   - low_disruption | bool
@@ -2463,70 +2459,6 @@
   - restrict_strategy | bool
   - ansible_virtualization_type not in ["docker", "lxc", "openvz", "podman", "container"]
   - '"grub2-common" in ansible_facts.packages'
-  tags:
-  - CCE-80825-3
-  - CJIS-5.4.1.1
-  - DISA-STIG-RHEL-08-030601
-  - NIST-800-171-3.3.1
-  - NIST-800-53-AC-17(1)
-  - NIST-800-53-AU-10
-  - NIST-800-53-AU-14(1)
-  - NIST-800-53-CM-6(a)
-  - NIST-800-53-IR-5(1)
-  - PCI-DSS-Req-10.3
-  - grub2_audit_argument
-  - low_disruption
-  - medium_complexity
-  - medium_severity
-  - reboot_required
-  - restrict_strategy
-
-- name: Update the bootloader menu
-  command: /usr/bin/grub2-editenv - set "{{ item }} audit=1"
-  with_items: '{{ kernelopts.stdout_lines | select(''match'', ''^kernelopts.*'') | list }}'
-  when:
-  - grub2_audit_argument | bool
-  - low_disruption | bool
-  - medium_complexity | bool
-  - medium_severity | bool
-  - reboot_required | bool
-  - restrict_strategy | bool
-  - ansible_virtualization_type not in ["docker", "lxc", "openvz", "podman", "container"]
-  - '"grub2-common" in ansible_facts.packages'
-  - kernelopts.rc == 0
-  - kernelopts.stdout_lines is defined
-  - kernelopts.stdout_lines | length > 0
-  - kernelopts.stdout | regex_search('^kernelopts=(?:.*\s)?audit=1(?:\s.*)?$', multiline=True) is none
-  tags:
-  - CCE-80825-3
-  - CJIS-5.4.1.1
-  - DISA-STIG-RHEL-08-030601
-  - NIST-800-171-3.3.1
-  - NIST-800-53-AC-17(1)
-  - NIST-800-53-AU-10
-  - NIST-800-53-AU-14(1)
-  - NIST-800-53-CM-6(a)
-  - NIST-800-53-IR-5(1)
-  - PCI-DSS-Req-10.3
-  - grub2_audit_argument
-  - low_disruption
-  - medium_complexity
-  - medium_severity
-  - reboot_required
-  - restrict_strategy
-
-- name: Update the bootloader menu when there are no entries previously set
-  command: /usr/bin/grub2-editenv - set "kernelopts=audit=1"
-  when:
-  - grub2_audit_argument | bool
-  - low_disruption | bool
-  - medium_complexity | bool
-  - medium_severity | bool
-  - reboot_required | bool
-  - restrict_strategy | bool
-  - ansible_virtualization_type not in ["docker", "lxc", "openvz", "podman", "container"]
-  - '"grub2-common" in ansible_facts.packages'
-  - kernelopts.rc != 0
   tags:
   - CCE-80825-3
   - CJIS-5.4.1.1
@@ -5814,7 +5746,7 @@
   tags:
   - CCE-80687-7
   - CJIS-5.4.1.1
-  - DISA-STIG-RHEL-08-030540
+  - DISA-STIG-RHEL-08-030490
   - NIST-800-171-3.1.7
   - NIST-800-53-AU-12(c)
   - NIST-800-53-AU-2(d)
@@ -5848,7 +5780,7 @@
   tags:
   - CCE-80687-7
   - CJIS-5.4.1.1
-  - DISA-STIG-RHEL-08-030540
+  - DISA-STIG-RHEL-08-030490
   - NIST-800-171-3.1.7
   - NIST-800-53-AU-12(c)
   - NIST-800-53-AU-2(d)
@@ -5967,7 +5899,7 @@
   tags:
   - CCE-80687-7
   - CJIS-5.4.1.1
-  - DISA-STIG-RHEL-08-030540
+  - DISA-STIG-RHEL-08-030490
   - NIST-800-171-3.1.7
   - NIST-800-53-AU-12(c)
   - NIST-800-53-AU-2(d)
@@ -6087,7 +6019,7 @@
   tags:
   - CCE-80687-7
   - CJIS-5.4.1.1
-  - DISA-STIG-RHEL-08-030540
+  - DISA-STIG-RHEL-08-030490
   - NIST-800-171-3.1.7
   - NIST-800-53-AU-12(c)
   - NIST-800-53-AU-2(d)
@@ -6106,7 +6038,7 @@
   tags:
   - CCE-80688-5
   - CJIS-5.4.1.1
-  - DISA-STIG-RHEL-08-030530
+  - DISA-STIG-RHEL-08-030490
   - NIST-800-171-3.1.7
   - NIST-800-53-AU-12(c)
   - NIST-800-53-AU-2(d)
@@ -6140,7 +6072,7 @@
   tags:
   - CCE-80688-5
   - CJIS-5.4.1.1
-  - DISA-STIG-RHEL-08-030530
+  - DISA-STIG-RHEL-08-030490
   - NIST-800-171-3.1.7
   - NIST-800-53-AU-12(c)
   - NIST-800-53-AU-2(d)
@@ -6259,7 +6191,7 @@
   tags:
   - CCE-80688-5
   - CJIS-5.4.1.1
-  - DISA-STIG-RHEL-08-030530
+  - DISA-STIG-RHEL-08-030490
   - NIST-800-171-3.1.7
   - NIST-800-53-AU-12(c)
   - NIST-800-53-AU-2(d)
@@ -6379,7 +6311,7 @@
   tags:
   - CCE-80688-5
   - CJIS-5.4.1.1
-  - DISA-STIG-RHEL-08-030530
+  - DISA-STIG-RHEL-08-030490
   - NIST-800-171-3.1.7
   - NIST-800-53-AU-12(c)
   - NIST-800-53-AU-2(d)
@@ -6398,7 +6330,7 @@
   tags:
   - CCE-80689-3
   - CJIS-5.4.1.1
-  - DISA-STIG-RHEL-08-030520
+  - DISA-STIG-RHEL-08-030480
   - NIST-800-171-3.1.7
   - NIST-800-53-AU-12(c)
   - NIST-800-53-AU-2(d)
@@ -6432,7 +6364,7 @@
   tags:
   - CCE-80689-3
   - CJIS-5.4.1.1
-  - DISA-STIG-RHEL-08-030520
+  - DISA-STIG-RHEL-08-030480
   - NIST-800-171-3.1.7
   - NIST-800-53-AU-12(c)
   - NIST-800-53-AU-2(d)
@@ -6553,7 +6485,7 @@
   tags:
   - CCE-80689-3
   - CJIS-5.4.1.1
-  - DISA-STIG-RHEL-08-030520
+  - DISA-STIG-RHEL-08-030480
   - NIST-800-171-3.1.7
   - NIST-800-53-AU-12(c)
   - NIST-800-53-AU-2(d)
@@ -6675,7 +6607,7 @@
   tags:
   - CCE-80689-3
   - CJIS-5.4.1.1
-  - DISA-STIG-RHEL-08-030520
+  - DISA-STIG-RHEL-08-030480
   - NIST-800-171-3.1.7
   - NIST-800-53-AU-12(c)
   - NIST-800-53-AU-2(d)
@@ -6694,7 +6626,7 @@
   tags:
   - CCE-80690-1
   - CJIS-5.4.1.1
-  - DISA-STIG-RHEL-08-030510
+  - DISA-STIG-RHEL-08-030480
   - NIST-800-171-3.1.7
   - NIST-800-53-AU-12(c)
   - NIST-800-53-AU-2(d)
@@ -6728,7 +6660,7 @@
   tags:
   - CCE-80690-1
   - CJIS-5.4.1.1
-  - DISA-STIG-RHEL-08-030510
+  - DISA-STIG-RHEL-08-030480
   - NIST-800-171-3.1.7
   - NIST-800-53-AU-12(c)
   - NIST-800-53-AU-2(d)
@@ -6849,7 +6781,7 @@
   tags:
   - CCE-80690-1
   - CJIS-5.4.1.1
-  - DISA-STIG-RHEL-08-030510
+  - DISA-STIG-RHEL-08-030480
   - NIST-800-171-3.1.7
   - NIST-800-53-AU-12(c)
   - NIST-800-53-AU-2(d)
@@ -6971,7 +6903,7 @@
   tags:
   - CCE-80690-1
   - CJIS-5.4.1.1
-  - DISA-STIG-RHEL-08-030510
+  - DISA-STIG-RHEL-08-030480
   - NIST-800-171-3.1.7
   - NIST-800-53-AU-12(c)
   - NIST-800-53-AU-2(d)
@@ -6990,7 +6922,7 @@
   tags:
   - CCE-80691-9
   - CJIS-5.4.1.1
-  - DISA-STIG-RHEL-08-030240
+  - DISA-STIG-RHEL-08-030200
   - NIST-800-171-3.1.7
   - NIST-800-53-AU-12(c)
   - NIST-800-53-AU-2(d)
@@ -7024,7 +6956,7 @@
   tags:
   - CCE-80691-9
   - CJIS-5.4.1.1
-  - DISA-STIG-RHEL-08-030240
+  - DISA-STIG-RHEL-08-030200
   - NIST-800-171-3.1.7
   - NIST-800-53-AU-12(c)
   - NIST-800-53-AU-2(d)
@@ -7248,7 +7180,7 @@
   tags:
   - CCE-80691-9
   - CJIS-5.4.1.1
-  - DISA-STIG-RHEL-08-030240
+  - DISA-STIG-RHEL-08-030200
   - NIST-800-171-3.1.7
   - NIST-800-53-AU-12(c)
   - NIST-800-53-AU-2(d)
@@ -7473,7 +7405,7 @@
   tags:
   - CCE-80691-9
   - CJIS-5.4.1.1
-  - DISA-STIG-RHEL-08-030240
+  - DISA-STIG-RHEL-08-030200
   - NIST-800-171-3.1.7
   - NIST-800-53-AU-12(c)
   - NIST-800-53-AU-2(d)
@@ -7492,7 +7424,7 @@
   tags:
   - CCE-80692-7
   - CJIS-5.4.1.1
-  - DISA-STIG-RHEL-08-030230
+  - DISA-STIG-RHEL-08-030200
   - NIST-800-171-3.1.7
   - NIST-800-53-AU-12(c)
   - NIST-800-53-AU-2(d)
@@ -7526,7 +7458,7 @@
   tags:
   - CCE-80692-7
   - CJIS-5.4.1.1
-  - DISA-STIG-RHEL-08-030230
+  - DISA-STIG-RHEL-08-030200
   - NIST-800-171-3.1.7
   - NIST-800-53-AU-12(c)
   - NIST-800-53-AU-2(d)
@@ -7750,7 +7682,7 @@
   tags:
   - CCE-80692-7
   - CJIS-5.4.1.1
-  - DISA-STIG-RHEL-08-030230
+  - DISA-STIG-RHEL-08-030200
   - NIST-800-171-3.1.7
   - NIST-800-53-AU-12(c)
   - NIST-800-53-AU-2(d)
@@ -7975,7 +7907,7 @@
   tags:
   - CCE-80692-7
   - CJIS-5.4.1.1
-  - DISA-STIG-RHEL-08-030230
+  - DISA-STIG-RHEL-08-030200
   - NIST-800-171-3.1.7
   - NIST-800-53-AU-12(c)
   - NIST-800-53-AU-2(d)
@@ -7994,7 +7926,7 @@
   tags:
   - CCE-80693-5
   - CJIS-5.4.1.1
-  - DISA-STIG-RHEL-08-030500
+  - DISA-STIG-RHEL-08-030480
   - NIST-800-171-3.1.7
   - NIST-800-53-AU-12(c)
   - NIST-800-53-AU-2(d)
@@ -8028,7 +7960,7 @@
   tags:
   - CCE-80693-5
   - CJIS-5.4.1.1
-  - DISA-STIG-RHEL-08-030500
+  - DISA-STIG-RHEL-08-030480
   - NIST-800-171-3.1.7
   - NIST-800-53-AU-12(c)
   - NIST-800-53-AU-2(d)
@@ -8149,7 +8081,7 @@
   tags:
   - CCE-80693-5
   - CJIS-5.4.1.1
-  - DISA-STIG-RHEL-08-030500
+  - DISA-STIG-RHEL-08-030480
   - NIST-800-171-3.1.7
   - NIST-800-53-AU-12(c)
   - NIST-800-53-AU-2(d)
@@ -8271,7 +8203,7 @@
   tags:
   - CCE-80693-5
   - CJIS-5.4.1.1
-  - DISA-STIG-RHEL-08-030500
+  - DISA-STIG-RHEL-08-030480
   - NIST-800-171-3.1.7
   - NIST-800-53-AU-12(c)
   - NIST-800-53-AU-2(d)
@@ -8792,7 +8724,7 @@
   tags:
   - CCE-80695-0
   - CJIS-5.4.1.1
-  - DISA-STIG-RHEL-08-030220
+  - DISA-STIG-RHEL-08-030200
   - NIST-800-171-3.1.7
   - NIST-800-53-AU-12(c)
   - NIST-800-53-AU-2(d)
@@ -8826,7 +8758,7 @@
   tags:
   - CCE-80695-0
   - CJIS-5.4.1.1
-  - DISA-STIG-RHEL-08-030220
+  - DISA-STIG-RHEL-08-030200
   - NIST-800-171-3.1.7
   - NIST-800-53-AU-12(c)
   - NIST-800-53-AU-2(d)
@@ -9050,7 +8982,7 @@
   tags:
   - CCE-80695-0
   - CJIS-5.4.1.1
-  - DISA-STIG-RHEL-08-030220
+  - DISA-STIG-RHEL-08-030200
   - NIST-800-171-3.1.7
   - NIST-800-53-AU-12(c)
   - NIST-800-53-AU-2(d)
@@ -9275,7 +9207,7 @@
   tags:
   - CCE-80695-0
   - CJIS-5.4.1.1
-  - DISA-STIG-RHEL-08-030220
+  - DISA-STIG-RHEL-08-030200
   - NIST-800-171-3.1.7
   - NIST-800-53-AU-12(c)
   - NIST-800-53-AU-2(d)
@@ -9294,7 +9226,7 @@
   tags:
   - CCE-80696-8
   - CJIS-5.4.1.1
-  - DISA-STIG-RHEL-08-030210
+  - DISA-STIG-RHEL-08-030200
   - NIST-800-171-3.1.7
   - NIST-800-53-AU-12(c)
   - NIST-800-53-AU-2(d)
@@ -9328,7 +9260,7 @@
   tags:
   - CCE-80696-8
   - CJIS-5.4.1.1
-  - DISA-STIG-RHEL-08-030210
+  - DISA-STIG-RHEL-08-030200
   - NIST-800-171-3.1.7
   - NIST-800-53-AU-12(c)
   - NIST-800-53-AU-2(d)
@@ -9552,7 +9484,7 @@
   tags:
   - CCE-80696-8
   - CJIS-5.4.1.1
-  - DISA-STIG-RHEL-08-030210
+  - DISA-STIG-RHEL-08-030200
   - NIST-800-171-3.1.7
   - NIST-800-53-AU-12(c)
   - NIST-800-53-AU-2(d)
@@ -9777,7 +9709,7 @@
   tags:
   - CCE-80696-8
   - CJIS-5.4.1.1
-  - DISA-STIG-RHEL-08-030210
+  - DISA-STIG-RHEL-08-030200
   - NIST-800-171-3.1.7
   - NIST-800-53-AU-12(c)
   - NIST-800-53-AU-2(d)
@@ -9796,7 +9728,7 @@
   tags:
   - CCE-80697-6
   - CJIS-5.4.1.1
-  - DISA-STIG-RHEL-08-030270
+  - DISA-STIG-RHEL-08-030200
   - NIST-800-171-3.1.7
   - NIST-800-53-AU-12(c)
   - NIST-800-53-AU-2(d)
@@ -9830,7 +9762,7 @@
   tags:
   - CCE-80697-6
   - CJIS-5.4.1.1
-  - DISA-STIG-RHEL-08-030270
+  - DISA-STIG-RHEL-08-030200
   - NIST-800-171-3.1.7
   - NIST-800-53-AU-12(c)
   - NIST-800-53-AU-2(d)
@@ -10054,7 +9986,7 @@
   tags:
   - CCE-80697-6
   - CJIS-5.4.1.1
-  - DISA-STIG-RHEL-08-030270
+  - DISA-STIG-RHEL-08-030200
   - NIST-800-171-3.1.7
   - NIST-800-53-AU-12(c)
   - NIST-800-53-AU-2(d)
@@ -10279,7 +10211,7 @@
   tags:
   - CCE-80697-6
   - CJIS-5.4.1.1
-  - DISA-STIG-RHEL-08-030270
+  - DISA-STIG-RHEL-08-030200
   - NIST-800-171-3.1.7
   - NIST-800-53-AU-12(c)
   - NIST-800-53-AU-2(d)
@@ -13622,10 +13554,10 @@
   - medium_severity | bool
   - no_reboot_needed | bool
 
-- name: Ensure permission 0644 on /etc/group
+- name: Ensure permission u-xs,g-xws,o-xwt on /etc/group
   file:
     path: /etc/group
-    mode: '0644'
+    mode: u-xs,g-xws,o-xwt
   when:
   - configure_strategy | bool
   - file_permissions_etc_group | bool
@@ -13671,10 +13603,10 @@
   - medium_severity | bool
   - no_reboot_needed | bool
 
-- name: Ensure permission 0644 on /etc/passwd
+- name: Ensure permission u-xs,g-xws,o-xwt on /etc/passwd
   file:
     path: /etc/passwd
-    mode: '0644'
+    mode: u-xs,g-xws,o-xwt
   when:
   - configure_strategy | bool
   - file_permissions_etc_passwd | bool
@@ -13720,10 +13652,10 @@
   - medium_severity | bool
   - no_reboot_needed | bool
 
-- name: Ensure permission 0000 on /etc/shadow
+- name: Ensure permission u-xwrs,g-xwrs,o-xwrt on /etc/shadow
   file:
     path: /etc/shadow
-    mode: '0000'
+    mode: u-xwrs,g-xwrs,o-xwrt
   when:
   - configure_strategy | bool
   - file_permissions_etc_shadow | bool
@@ -13744,6 +13676,114 @@
   - low_disruption
   - medium_severity
   - no_reboot_needed
+
+- name: Set SSH Client Alive Count Max to zero
+  block:
+  - name: Check for duplicate values
+    lineinfile:
+      path: /etc/ssh/sshd_config
+      create: false
+      regexp: (?i)^\s*ClientAliveCountMax\s+
+      state: absent
+    check_mode: true
+    changed_when: false
+    register: dupes
+  - name: Deduplicate values from /etc/ssh/sshd_config
+    lineinfile:
+      path: /etc/ssh/sshd_config
+      create: false
+      regexp: (?i)^\s*ClientAliveCountMax\s+
+      state: absent
+    when: dupes.found is defined and dupes.found > 1
+  - name: Insert correct line to /etc/ssh/sshd_config
+    lineinfile:
+      path: /etc/ssh/sshd_config
+      create: true
+      regexp: (?i)^\s*ClientAliveCountMax\s+
+      line: ClientAliveCountMax 0
+      state: present
+      insertbefore: ^[#\s]*Match
+      validate: /usr/sbin/sshd -t -f %s
+  when:
+  - low_complexity | bool
+  - low_disruption | bool
+  - medium_severity | bool
+  - no_reboot_needed | bool
+  - restrict_strategy | bool
+  - sshd_set_keepalive_0 | bool
+  - ansible_virtualization_type not in ["docker", "lxc", "openvz", "podman", "container"]
+  tags:
+  - CCE-83405-1
+  - CJIS-5.5.6
+  - DISA-STIG-RHEL-08-010200
+  - NIST-800-171-3.1.11
+  - NIST-800-53-AC-12
+  - NIST-800-53-AC-17(a)
+  - NIST-800-53-AC-2(5)
+  - NIST-800-53-CM-6(a)
+  - NIST-800-53-SC-10
+  - PCI-DSS-Req-8.1.8
+  - low_complexity
+  - low_disruption
+  - medium_severity
+  - no_reboot_needed
+  - restrict_strategy
+  - sshd_set_keepalive_0
+
+- name: Set SSH Idle Timeout Interval
+  block:
+  - name: Check for duplicate values
+    lineinfile:
+      path: /etc/ssh/sshd_config
+      create: false
+      regexp: (?i)^\s*ClientAliveInterval\s+
+      state: absent
+    check_mode: true
+    changed_when: false
+    register: dupes
+  - name: Deduplicate values from /etc/ssh/sshd_config
+    lineinfile:
+      path: /etc/ssh/sshd_config
+      create: false
+      regexp: (?i)^\s*ClientAliveInterval\s+
+      state: absent
+    when: dupes.found is defined and dupes.found > 1
+  - name: Insert correct line to /etc/ssh/sshd_config
+    lineinfile:
+      path: /etc/ssh/sshd_config
+      create: true
+      regexp: (?i)^\s*ClientAliveInterval\s+
+      line: ClientAliveInterval {{ sshd_idle_timeout_value }}
+      state: present
+      insertbefore: ^[#\s]*Match
+      validate: /usr/sbin/sshd -t -f %s
+  when:
+  - low_complexity | bool
+  - low_disruption | bool
+  - medium_severity | bool
+  - no_reboot_needed | bool
+  - restrict_strategy | bool
+  - sshd_set_idle_timeout | bool
+  - ansible_virtualization_type not in ["docker", "lxc", "openvz", "podman", "container"]
+  tags:
+  - CCE-80906-1
+  - CJIS-5.5.6
+  - DISA-STIG-RHEL-08-010201
+  - NIST-800-171-3.1.11
+  - NIST-800-53-AC-12
+  - NIST-800-53-AC-17(a)
+  - NIST-800-53-AC-17(a)
+  - NIST-800-53-AC-2(5)
+  - NIST-800-53-CM-6(a)
+  - NIST-800-53-CM-6(a)
+  - NIST-800-53-SC-10
+  - PCI-DSS-Req-8.1.8
+  - low_complexity
+  - low_disruption
+  - medium_severity
+  - no_reboot_needed
+  - restrict_strategy
+  - sshd_set_idle_timeout
 
 - name: Disable Host-Based Authentication
   block:
@@ -14141,111 +14181,3 @@
   - no_reboot_needed
   - restrict_strategy
   - sshd_enable_warning_banner
-
-- name: Set SSH Idle Timeout Interval
-  block:
-  - name: Check for duplicate values
-    lineinfile:
-      path: /etc/ssh/sshd_config
-      create: false
-      regexp: (?i)^\s*ClientAliveInterval\s+
-      state: absent
-    check_mode: true
-    changed_when: false
-    register: dupes
-  - name: Deduplicate values from /etc/ssh/sshd_config
-    lineinfile:
-      path: /etc/ssh/sshd_config
-      create: false
-      regexp: (?i)^\s*ClientAliveInterval\s+
-      state: absent
-    when: dupes.found is defined and dupes.found > 1
-  - name: Insert correct line to /etc/ssh/sshd_config
-    lineinfile:
-      path: /etc/ssh/sshd_config
-      create: true
-      regexp: (?i)^\s*ClientAliveInterval\s+
-      line: ClientAliveInterval {{ sshd_idle_timeout_value }}
-      state: present
-      insertbefore: ^[#\s]*Match
-      validate: /usr/sbin/sshd -t -f %s
-  when:
-  - low_complexity | bool
-  - low_disruption | bool
-  - medium_severity | bool
-  - no_reboot_needed | bool
-  - restrict_strategy | bool
-  - sshd_set_idle_timeout | bool
-  - ansible_virtualization_type not in ["docker", "lxc", "openvz", "podman", "container"]
-  tags:
-  - CCE-80906-1
-  - CJIS-5.5.6
-  - DISA-STIG-RHEL-08-010201
-  - NIST-800-171-3.1.11
-  - NIST-800-53-AC-12
-  - NIST-800-53-AC-17(a)
-  - NIST-800-53-AC-17(a)
-  - NIST-800-53-AC-2(5)
-  - NIST-800-53-CM-6(a)
-  - NIST-800-53-CM-6(a)
-  - NIST-800-53-SC-10
-  - PCI-DSS-Req-8.1.8
-  - low_complexity
-  - low_disruption
-  - medium_severity
-  - no_reboot_needed
-  - restrict_strategy
-  - sshd_set_idle_timeout
-
-- name: Set SSH Client Alive Count Max to zero
-  block:
-  - name: Check for duplicate values
-    lineinfile:
-      path: /etc/ssh/sshd_config
-      create: false
-      regexp: (?i)^\s*ClientAliveCountMax\s+
-      state: absent
-    check_mode: true
-    changed_when: false
-    register: dupes
-  - name: Deduplicate values from /etc/ssh/sshd_config
-    lineinfile:
-      path: /etc/ssh/sshd_config
-      create: false
-      regexp: (?i)^\s*ClientAliveCountMax\s+
-      state: absent
-    when: dupes.found is defined and dupes.found > 1
-  - name: Insert correct line to /etc/ssh/sshd_config
-    lineinfile:
-      path: /etc/ssh/sshd_config
-      create: true
-      regexp: (?i)^\s*ClientAliveCountMax\s+
-      line: ClientAliveCountMax 0
-      state: present
-      insertbefore: ^[#\s]*Match
-      validate: /usr/sbin/sshd -t -f %s
-  when:
-  - low_complexity | bool
-  - low_disruption | bool
-  - medium_severity | bool
-  - no_reboot_needed | bool
-  - restrict_strategy | bool
-  - sshd_set_keepalive_0 | bool
-  - ansible_virtualization_type not in ["docker", "lxc", "openvz", "podman", "container"]
-  tags:
-  - CCE-83405-1
-  - CJIS-5.5.6
-  - DISA-STIG-RHEL-08-010200
-  - NIST-800-171-3.1.11
-  - NIST-800-53-AC-12
-  - NIST-800-53-AC-17(a)
-  - NIST-800-53-AC-2(5)
-  - NIST-800-53-CM-6(a)
-  - NIST-800-53-SC-10
-  - PCI-DSS-Req-8.1.8
-  - low_complexity
-  - low_disruption
-  - medium_severity
-  - no_reboot_needed
-  - restrict_strategy
-  - sshd_set_keepalive_0
