@@ -6,6 +6,7 @@ var_authselect_profile: sssd
 var_password_pam_difok: '6'
 var_password_pam_minlen: '12'
 var_password_hashing_algorithm: SHA512
+var_logind_session_timeout: '1800'
 var_account_disable_post_pw_expiration: '0'
 var_accounts_minimum_age_login_defs: '1'
 var_accounts_max_concurrent_login_sessions: '3'
@@ -46,6 +47,7 @@ DISA_STIG_RHEL_08_020330: true
 DISA_STIG_RHEL_08_020331: true
 DISA_STIG_RHEL_08_020340: true
 DISA_STIG_RHEL_08_030020: true
+DISA_STIG_RHEL_08_030070: true
 DISA_STIG_RHEL_08_030121: true
 DISA_STIG_RHEL_08_030181: true
 DISA_STIG_RHEL_08_030200: true
@@ -130,6 +132,7 @@ file_owner_grub2_cfg: true
 file_permissions_etc_group: true
 file_permissions_etc_passwd: true
 file_permissions_etc_shadow: true
+file_permissions_var_log_audit: true
 firewalld_sshd_port_enabled: true
 grub2_audit_argument: true
 high_complexity: true
@@ -138,6 +141,7 @@ high_severity: true
 kernel_module_bluetooth_disabled: true
 kernel_module_dccp_disabled: true
 kernel_module_sctp_disabled: true
+logind_session_timeout: true
 low_complexity: true
 low_disruption: true
 low_severity: true
