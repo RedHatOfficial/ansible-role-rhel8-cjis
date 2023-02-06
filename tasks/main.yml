@@ -319,6 +319,7 @@
   with_items:
   - aide
   when:
+  - DISA_STIG_RHEL_08_010359 | bool
   - aide_build_database | bool
   - low_complexity | bool
   - low_disruption | bool
@@ -329,6 +330,7 @@
   tags:
   - CCE-80675-2
   - CJIS-5.10.1.3
+  - DISA-STIG-RHEL-08-010359
   - NIST-800-53-CM-6(a)
   - PCI-DSS-Req-11.5
   - aide_build_database
@@ -342,6 +344,7 @@
   command: /usr/sbin/aide --init
   changed_when: true
   when:
+  - DISA_STIG_RHEL_08_010359 | bool
   - aide_build_database | bool
   - low_complexity | bool
   - low_disruption | bool
@@ -352,6 +355,7 @@
   tags:
   - CCE-80675-2
   - CJIS-5.10.1.3
+  - DISA-STIG-RHEL-08-010359
   - NIST-800-53-CM-6(a)
   - PCI-DSS-Req-11.5
   - aide_build_database
@@ -366,6 +370,7 @@
     path: /var/lib/aide/aide.db.new.gz
   register: aide_database_stat
   when:
+  - DISA_STIG_RHEL_08_010359 | bool
   - aide_build_database | bool
   - low_complexity | bool
   - low_disruption | bool
@@ -376,6 +381,7 @@
   tags:
   - CCE-80675-2
   - CJIS-5.10.1.3
+  - DISA-STIG-RHEL-08-010359
   - NIST-800-53-CM-6(a)
   - PCI-DSS-Req-11.5
   - aide_build_database
@@ -392,6 +398,7 @@
     backup: true
     remote_src: true
   when:
+  - DISA_STIG_RHEL_08_010359 | bool
   - aide_build_database | bool
   - low_complexity | bool
   - low_disruption | bool
@@ -403,6 +410,7 @@
   tags:
   - CCE-80675-2
   - CJIS-5.10.1.3
+  - DISA-STIG-RHEL-08-010359
   - NIST-800-53-CM-6(a)
   - PCI-DSS-Req-11.5
   - aide_build_database
@@ -1753,11 +1761,11 @@
   - name: Ensure PAM Displays Last Logon/Access Notification - Define the PAM file to be edited as a local fact
     ansible.builtin.set_fact:
       pam_file_path: /etc/pam.d/postlogin
-  - name: Ensure PAM Displays Last Logon/Access Notification - Check if system relies on authselect
+  - name: Ensure PAM Displays Last Logon/Access Notification - Check if system relies on authselect tool
     ansible.builtin.stat:
       path: /usr/bin/authselect
     register: result_authselect_present
-  - name: Ensure PAM Displays Last Logon/Access Notification - Remediate using authselect
+  - name: Ensure PAM Displays Last Logon/Access Notification - Ensure authselect custom profile is used if authselect is present
     block:
     - name: Ensure PAM Displays Last Logon/Access Notification - Check integrity of authselect current profile
       ansible.builtin.command:
@@ -1994,11 +2002,11 @@
   - name: Ensure PAM Displays Last Logon/Access Notification - Define the PAM file to be edited as a local fact
     ansible.builtin.set_fact:
       pam_file_path: /etc/pam.d/postlogin
-  - name: Ensure PAM Displays Last Logon/Access Notification - Check if system relies on authselect
+  - name: Ensure PAM Displays Last Logon/Access Notification - Check if system relies on authselect tool
     ansible.builtin.stat:
       path: /usr/bin/authselect
     register: result_authselect_present
-  - name: Ensure PAM Displays Last Logon/Access Notification - Remediate using authselect
+  - name: Ensure PAM Displays Last Logon/Access Notification - Ensure authselect custom profile is used if authselect is present
     block:
     - name: Ensure PAM Displays Last Logon/Access Notification - Check integrity of authselect current profile
       ansible.builtin.command:
@@ -2167,8 +2175,8 @@
   - no_reboot_needed | bool
   - restrict_strategy | bool
 
-- name: Ensure PAM variable difok is set accordingly
-  lineinfile:
+- name: Ensure PAM Enforces Password Requirements - Minimum Different Characters - Ensure PAM variable difok is set accordingly
+  ansible.builtin.lineinfile:
     create: true
     dest: /etc/security/pwquality.conf
     regexp: ^#?\s*difok
@@ -2224,8 +2232,8 @@
   - no_reboot_needed | bool
   - restrict_strategy | bool
 
-- name: Ensure PAM variable minlen is set accordingly
-  lineinfile:
+- name: Ensure PAM Enforces Password Requirements - Minimum Length - Ensure PAM variable minlen is set accordingly
+  ansible.builtin.lineinfile:
     create: true
     dest: /etc/security/pwquality.conf
     regexp: ^#?\s*minlen
@@ -2431,11 +2439,12 @@
   - name: Set PAM's Password Hashing Algorithm - password-auth - Define the PAM file to be edited as a local fact
     ansible.builtin.set_fact:
       pam_file_path: /etc/pam.d/password-auth
-  - name: Set PAM's Password Hashing Algorithm - password-auth - Check if system relies on authselect
+  - name: Set PAM's Password Hashing Algorithm - password-auth - Check if system relies on authselect tool
     ansible.builtin.stat:
       path: /usr/bin/authselect
     register: result_authselect_present
-  - name: Set PAM's Password Hashing Algorithm - password-auth - Remediate using authselect
+  - name: Set PAM's Password Hashing Algorithm - password-auth - Ensure authselect custom profile is used if authselect is
+      present
     block:
     - name: Set PAM's Password Hashing Algorithm - password-auth - Check integrity of authselect current profile
       ansible.builtin.command:
@@ -2702,11 +2711,11 @@
   - name: Set PAM's Password Hashing Algorithm - Define the PAM file to be edited as a local fact
     ansible.builtin.set_fact:
       pam_file_path: /etc/pam.d/system-auth
-  - name: Set PAM's Password Hashing Algorithm - Check if system relies on authselect
+  - name: Set PAM's Password Hashing Algorithm - Check if system relies on authselect tool
     ansible.builtin.stat:
       path: /usr/bin/authselect
     register: result_authselect_present
-  - name: Set PAM's Password Hashing Algorithm - Remediate using authselect
+  - name: Set PAM's Password Hashing Algorithm - Ensure authselect custom profile is used if authselect is present
     block:
     - name: Set PAM's Password Hashing Algorithm - Check integrity of authselect current profile
       ansible.builtin.command:
@@ -2902,6 +2911,40 @@
   - medium_severity
   - no_reboot_needed
   - set_password_hashing_algorithm_systemauth
+
+- name: Set 'StopIdleSessionSec' to '{{ var_logind_session_timeout }}' in the [Login] section of '/etc/systemd/logind.conf'
+  ini_file:
+    path: /etc/systemd/logind.conf
+    section: Login
+    option: StopIdleSessionSec
+    value: '{{ var_logind_session_timeout }}'
+    create: true
+    mode: 420
+  tags:
+  - CCE-90784-0
+  - CJIS-5.5.6
+  - NIST-800-171-3.1.11
+  - NIST-800-53-AC-12
+  - NIST-800-53-AC-17(a)
+  - NIST-800-53-AC-17(a)
+  - NIST-800-53-AC-2(5)
+  - NIST-800-53-CM-6(a)
+  - NIST-800-53-CM-6(a)
+  - NIST-800-53-SC-10
+  - PCI-DSS-Req-8.1.8
+  - logind_session_timeout
+  - low_complexity
+  - low_disruption
+  - medium_severity
+  - reboot_required
+  - restrict_strategy
+  when:
+  - logind_session_timeout | bool
+  - low_complexity | bool
+  - low_disruption | bool
+  - medium_severity | bool
+  - reboot_required | bool
+  - restrict_strategy | bool
 
 - name: Gather the package facts
   package_facts:
@@ -5920,6 +5963,7 @@
   - NIST-800-53-AU-12(c)
   - NIST-800-53-AU-2(d)
   - NIST-800-53-CM-6(a)
+  - PCI-DSS-Req-10.2.1.5
   - PCI-DSS-Req-10.2.2
   - PCI-DSS-Req-10.2.5.b
   - audit_rules_sysadmin_actions
@@ -5960,6 +6004,7 @@
   - NIST-800-53-AU-12(c)
   - NIST-800-53-AU-2(d)
   - NIST-800-53-CM-6(a)
+  - PCI-DSS-Req-10.2.1.5
   - PCI-DSS-Req-10.2.2
   - PCI-DSS-Req-10.2.5.b
   - audit_rules_sysadmin_actions
@@ -5994,6 +6039,7 @@
   - NIST-800-53-AU-12(c)
   - NIST-800-53-AU-2(d)
   - NIST-800-53-CM-6(a)
+  - PCI-DSS-Req-10.2.1.5
   - PCI-DSS-Req-10.2.2
   - PCI-DSS-Req-10.2.5.b
   - audit_rules_sysadmin_actions
@@ -6027,6 +6073,7 @@
   - NIST-800-53-AU-12(c)
   - NIST-800-53-AU-2(d)
   - NIST-800-53-CM-6(a)
+  - PCI-DSS-Req-10.2.1.5
   - PCI-DSS-Req-10.2.2
   - PCI-DSS-Req-10.2.5.b
   - audit_rules_sysadmin_actions
@@ -6060,6 +6107,7 @@
   - NIST-800-53-AU-12(c)
   - NIST-800-53-AU-2(d)
   - NIST-800-53-CM-6(a)
+  - PCI-DSS-Req-10.2.1.5
   - PCI-DSS-Req-10.2.2
   - PCI-DSS-Req-10.2.5.b
   - audit_rules_sysadmin_actions
@@ -6094,6 +6142,7 @@
   - NIST-800-53-AU-12(c)
   - NIST-800-53-AU-2(d)
   - NIST-800-53-CM-6(a)
+  - PCI-DSS-Req-10.2.1.5
   - PCI-DSS-Req-10.2.2
   - PCI-DSS-Req-10.2.5.b
   - audit_rules_sysadmin_actions
@@ -6127,6 +6176,7 @@
   - NIST-800-53-AU-12(c)
   - NIST-800-53-AU-2(d)
   - NIST-800-53-CM-6(a)
+  - PCI-DSS-Req-10.2.1.5
   - PCI-DSS-Req-10.2.2
   - PCI-DSS-Req-10.2.5.b
   - audit_rules_sysadmin_actions
@@ -6162,6 +6212,7 @@
   - NIST-800-53-AU-12(c)
   - NIST-800-53-AU-2(d)
   - NIST-800-53-CM-6(a)
+  - PCI-DSS-Req-10.2.1.5
   - PCI-DSS-Req-10.2.2
   - PCI-DSS-Req-10.2.5.b
   - audit_rules_sysadmin_actions
@@ -6195,6 +6246,7 @@
   - NIST-800-53-AU-12(c)
   - NIST-800-53-AU-2(d)
   - NIST-800-53-CM-6(a)
+  - PCI-DSS-Req-10.2.1.5
   - PCI-DSS-Req-10.2.2
   - PCI-DSS-Req-10.2.5.b
   - audit_rules_sysadmin_actions
@@ -6229,6 +6281,7 @@
   - NIST-800-53-AU-12(c)
   - NIST-800-53-AU-2(d)
   - NIST-800-53-CM-6(a)
+  - PCI-DSS-Req-10.2.1.5
   - PCI-DSS-Req-10.2.2
   - PCI-DSS-Req-10.2.5.b
   - audit_rules_sysadmin_actions
@@ -6262,6 +6315,7 @@
   - NIST-800-53-AU-12(c)
   - NIST-800-53-AU-2(d)
   - NIST-800-53-CM-6(a)
+  - PCI-DSS-Req-10.2.1.5
   - PCI-DSS-Req-10.2.2
   - PCI-DSS-Req-10.2.5.b
   - audit_rules_sysadmin_actions
@@ -6295,6 +6349,7 @@
   - NIST-800-53-AU-12(c)
   - NIST-800-53-AU-2(d)
   - NIST-800-53-CM-6(a)
+  - PCI-DSS-Req-10.2.1.5
   - PCI-DSS-Req-10.2.2
   - PCI-DSS-Req-10.2.5.b
   - audit_rules_sysadmin_actions
@@ -6329,6 +6384,7 @@
   - NIST-800-53-AU-12(c)
   - NIST-800-53-AU-2(d)
   - NIST-800-53-CM-6(a)
+  - PCI-DSS-Req-10.2.1.5
   - PCI-DSS-Req-10.2.2
   - PCI-DSS-Req-10.2.5.b
   - audit_rules_sysadmin_actions
@@ -6362,6 +6418,7 @@
   - NIST-800-53-AU-12(c)
   - NIST-800-53-AU-2(d)
   - NIST-800-53-CM-6(a)
+  - PCI-DSS-Req-10.2.1.5
   - PCI-DSS-Req-10.2.2
   - PCI-DSS-Req-10.2.5.b
   - audit_rules_sysadmin_actions
@@ -6397,9 +6454,188 @@
   - NIST-800-53-AU-12(c)
   - NIST-800-53-AU-2(d)
   - NIST-800-53-CM-6(a)
+  - PCI-DSS-Req-10.2.1.5
   - PCI-DSS-Req-10.2.2
   - PCI-DSS-Req-10.2.5.b
   - audit_rules_sysadmin_actions
+  - low_complexity
+  - low_disruption
+  - medium_severity
+  - no_reboot_needed
+  - restrict_strategy
+
+- name: Gather the package facts
+  package_facts:
+    manager: auto
+  tags:
+  - CCE-80819-6
+  - CJIS-5.4.1.1
+  - DISA-STIG-RHEL-08-030070
+  - NIST-800-171-3.3.1
+  - NIST-800-53-AC-6(1)
+  - NIST-800-53-AU-9(4)
+  - NIST-800-53-CM-6(a)
+  - PCI-DSS-Req-10.5
+  - file_permissions_var_log_audit
+  - low_complexity
+  - low_disruption
+  - medium_severity
+  - no_reboot_needed
+  - restrict_strategy
+  when:
+  - DISA_STIG_RHEL_08_030070 | bool
+  - file_permissions_var_log_audit | bool
+  - low_complexity | bool
+  - low_disruption | bool
+  - medium_severity | bool
+  - no_reboot_needed | bool
+  - restrict_strategy | bool
+
+- name: Get audit log files
+  command: grep -iw ^log_file /etc/audit/auditd.conf
+  failed_when: false
+  register: log_file_exists
+  when:
+  - DISA_STIG_RHEL_08_030070 | bool
+  - file_permissions_var_log_audit | bool
+  - low_complexity | bool
+  - low_disruption | bool
+  - medium_severity | bool
+  - no_reboot_needed | bool
+  - restrict_strategy | bool
+  - '"audit" in ansible_facts.packages'
+  - ansible_virtualization_type not in ["docker", "lxc", "openvz", "podman", "container"]
+  tags:
+  - CCE-80819-6
+  - CJIS-5.4.1.1
+  - DISA-STIG-RHEL-08-030070
+  - NIST-800-171-3.3.1
+  - NIST-800-53-AC-6(1)
+  - NIST-800-53-AU-9(4)
+  - NIST-800-53-CM-6(a)
+  - PCI-DSS-Req-10.5
+  - file_permissions_var_log_audit
+  - low_complexity
+  - low_disruption
+  - medium_severity
+  - no_reboot_needed
+  - restrict_strategy
+
+- name: Parse log file line
+  command: awk -F '=' '/^log_file/ {print $2}' /etc/audit/auditd.conf
+  register: log_file_line
+  when:
+  - DISA_STIG_RHEL_08_030070 | bool
+  - file_permissions_var_log_audit | bool
+  - low_complexity | bool
+  - low_disruption | bool
+  - medium_severity | bool
+  - no_reboot_needed | bool
+  - restrict_strategy | bool
+  - '"audit" in ansible_facts.packages'
+  - ansible_virtualization_type not in ["docker", "lxc", "openvz", "podman", "container"]
+  - (log_file_exists.stdout | length > 0)
+  tags:
+  - CCE-80819-6
+  - CJIS-5.4.1.1
+  - DISA-STIG-RHEL-08-030070
+  - NIST-800-171-3.3.1
+  - NIST-800-53-AC-6(1)
+  - NIST-800-53-AU-9(4)
+  - NIST-800-53-CM-6(a)
+  - PCI-DSS-Req-10.5
+  - file_permissions_var_log_audit
+  - low_complexity
+  - low_disruption
+  - medium_severity
+  - no_reboot_needed
+  - restrict_strategy
+
+- name: Set default log_file if not set
+  set_fact:
+    log_file: /var/log/audit/audit.log
+  when:
+  - DISA_STIG_RHEL_08_030070 | bool
+  - file_permissions_var_log_audit | bool
+  - low_complexity | bool
+  - low_disruption | bool
+  - medium_severity | bool
+  - no_reboot_needed | bool
+  - restrict_strategy | bool
+  - '"audit" in ansible_facts.packages'
+  - ansible_virtualization_type not in ["docker", "lxc", "openvz", "podman", "container"]
+  - (log_file_exists is undefined) or (log_file_exists.stdout | length == 0)
+  tags:
+  - CCE-80819-6
+  - CJIS-5.4.1.1
+  - DISA-STIG-RHEL-08-030070
+  - NIST-800-171-3.3.1
+  - NIST-800-53-AC-6(1)
+  - NIST-800-53-AU-9(4)
+  - NIST-800-53-CM-6(a)
+  - PCI-DSS-Req-10.5
+  - file_permissions_var_log_audit
+  - low_complexity
+  - low_disruption
+  - medium_severity
+  - no_reboot_needed
+  - restrict_strategy
+
+- name: Set log_file from log_file_line if not set already
+  set_fact:
+    log_file: '{{ log_file_line.stdout | trim }}'
+  when:
+  - DISA_STIG_RHEL_08_030070 | bool
+  - file_permissions_var_log_audit | bool
+  - low_complexity | bool
+  - low_disruption | bool
+  - medium_severity | bool
+  - no_reboot_needed | bool
+  - restrict_strategy | bool
+  - '"audit" in ansible_facts.packages'
+  - ansible_virtualization_type not in ["docker", "lxc", "openvz", "podman", "container"]
+  - (log_file_line.stdout is defined) and (log_file_line.stdout | length > 0)
+  tags:
+  - CCE-80819-6
+  - CJIS-5.4.1.1
+  - DISA-STIG-RHEL-08-030070
+  - NIST-800-171-3.3.1
+  - NIST-800-53-AC-6(1)
+  - NIST-800-53-AU-9(4)
+  - NIST-800-53-CM-6(a)
+  - PCI-DSS-Req-10.5
+  - file_permissions_var_log_audit
+  - low_complexity
+  - low_disruption
+  - medium_severity
+  - no_reboot_needed
+  - restrict_strategy
+
+- name: Apply mode to log file
+  file:
+    path: '{{ log_file }}'
+    mode: 384
+  failed_when: false
+  when:
+  - DISA_STIG_RHEL_08_030070 | bool
+  - file_permissions_var_log_audit | bool
+  - low_complexity | bool
+  - low_disruption | bool
+  - medium_severity | bool
+  - no_reboot_needed | bool
+  - restrict_strategy | bool
+  - '"audit" in ansible_facts.packages'
+  - ansible_virtualization_type not in ["docker", "lxc", "openvz", "podman", "container"]
+  tags:
+  - CCE-80819-6
+  - CJIS-5.4.1.1
+  - DISA-STIG-RHEL-08-030070
+  - NIST-800-171-3.3.1
+  - NIST-800-53-AC-6(1)
+  - NIST-800-53-AU-9(4)
+  - NIST-800-53-CM-6(a)
+  - PCI-DSS-Req-10.5
+  - file_permissions_var_log_audit
   - low_complexity
   - low_disruption
   - medium_severity
@@ -13814,8 +14050,8 @@
   - low_disruption | bool
   - medium_severity | bool
   - no_reboot_needed | bool
-  - '"grub2-common" in ansible_facts.packages'
   - '"/boot/efi" not in ansible_mounts | map(attribute="mount") | list'
+  - '"grub2-common" in ansible_facts.packages'
   - ansible_virtualization_type not in ["docker", "lxc", "openvz", "podman", "container"]
   tags:
   - CCE-80800-6
@@ -13842,8 +14078,8 @@
   - low_disruption | bool
   - medium_severity | bool
   - no_reboot_needed | bool
-  - '"grub2-common" in ansible_facts.packages'
   - '"/boot/efi" not in ansible_mounts | map(attribute="mount") | list'
+  - '"grub2-common" in ansible_facts.packages'
   - ansible_virtualization_type not in ["docker", "lxc", "openvz", "podman", "container"]
   - file_exists.stat is defined and file_exists.stat.exists
   tags:
@@ -13895,8 +14131,8 @@
   - low_disruption | bool
   - medium_severity | bool
   - no_reboot_needed | bool
-  - '"grub2-common" in ansible_facts.packages'
   - '"/boot/efi" not in ansible_mounts | map(attribute="mount") | list'
+  - '"grub2-common" in ansible_facts.packages'
   - ansible_virtualization_type not in ["docker", "lxc", "openvz", "podman", "container"]
   tags:
   - CCE-80805-5
@@ -13923,8 +14159,8 @@
   - low_disruption | bool
   - medium_severity | bool
   - no_reboot_needed | bool
-  - '"grub2-common" in ansible_facts.packages'
   - '"/boot/efi" not in ansible_mounts | map(attribute="mount") | list'
+  - '"grub2-common" in ansible_facts.packages'
   - ansible_virtualization_type not in ["docker", "lxc", "openvz", "podman", "container"]
   - file_exists.stat is defined and file_exists.stat.exists
   tags:
