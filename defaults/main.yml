@@ -23,6 +23,7 @@ sysctl_net_ipv4_tcp_syncookies_value: '1'
 sshd_idle_timeout_value: '1800'
 firewalld_sshd_zone: public
 DISA_STIG_RHEL_08_010010: true
+DISA_STIG_RHEL_08_010019: true
 DISA_STIG_RHEL_08_010020: true
 DISA_STIG_RHEL_08_010040: true
 DISA_STIG_RHEL_08_010110: true
@@ -107,6 +108,7 @@ auditd_data_retention_space_left_action: true
 configure_crypto_policy: true
 configure_ssh_crypto_policy: true
 configure_strategy: true
+dconf_db_up_to_date: true
 dconf_gnome_screensaver_idle_activation_enabled: true
 dconf_gnome_screensaver_idle_delay: true
 dconf_gnome_screensaver_lock_enabled: true
