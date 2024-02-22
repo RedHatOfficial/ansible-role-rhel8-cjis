@@ -1,35 +1,4 @@
-- name: 'Set fact: Package manager reinstall command (dnf)'
-  set_fact:
-    package_manager_reinstall_cmd: dnf reinstall -y
-  when:
-  - high_complexity | bool
-  - high_severity | bool
-  - medium_disruption | bool
-  - no_reboot_needed | bool
-  - restrict_strategy | bool
-  - rpm_verify_hashes | bool
-  - ansible_distribution == "Fedora"
-  tags:
-  - CCE-80857-6
-  - CJIS-5.10.4.1
-  - NIST-800-171-3.3.8
-  - NIST-800-171-3.4.1
-  - NIST-800-53-AU-9(3)
-  - NIST-800-53-CM-6(c)
-  - NIST-800-53-CM-6(d)
-  - NIST-800-53-SI-7
-  - NIST-800-53-SI-7(1)
-  - NIST-800-53-SI-7(6)
-  - PCI-DSS-Req-11.5
-  - PCI-DSSv4-11.5.2
-  - high_complexity
-  - high_severity
-  - medium_disruption
-  - no_reboot_needed
-  - restrict_strategy
-  - rpm_verify_hashes
-
-- name: 'Set fact: Package manager reinstall command (yum)'
+- name: 'Set fact: Package manager reinstall command'
   set_fact:
     package_manager_reinstall_cmd: yum reinstall -y
   when:
@@ -39,7 +8,7 @@
   - no_reboot_needed | bool
   - restrict_strategy | bool
   - rpm_verify_hashes | bool
-  - (ansible_distribution == "RedHat" or ansible_distribution == "CentOS" or ansible_distribution == "OracleLinux")
+  - ansible_distribution in [ "Fedora", "RedHat", "CentOS", "OracleLinux" ]
   tags:
   - CCE-80857-6
   - CJIS-5.10.4.1
@@ -639,7 +608,7 @@
   lineinfile:
     dest: /etc/sysconfig/sshd
     state: absent
-    regexp: ^(?i)\s*CRYPTO_POLICY.*$
+    regexp: (?i)^\s*CRYPTO_POLICY.*$
   tags:
   - CCE-80939-2
   - DISA-STIG-RHEL-08-010287
@@ -1500,7 +1469,17 @@
     option: gpgcheck
     value: '1'
     no_extra_spaces: true
-  loop: '{{ repo_grep_results.stdout | regex_findall( ''(.+\.repo):\[(.+)\]\n?'' ) }}'
+  loop: '{{ repo_grep_results.stdout |regex_findall( ''(.+\.repo):\[(.+)\]\n?'' ) if repo_grep_results is not skipped else
+    []}}'
+  when:
+  - DISA_STIG_RHEL_08_010370 | bool
+  - enable_strategy | bool
+  - ensure_gpgcheck_never_disabled | bool
+  - high_severity | bool
+  - low_complexity | bool
+  - medium_disruption | bool
+  - no_reboot_needed | bool
+  - repo_grep_results is not skipped
   tags:
   - CCE-80792-5
   - CJIS-5.10.4.1
@@ -1523,14 +1502,6 @@
   - low_complexity
   - medium_disruption
   - no_reboot_needed
-  when:
-  - DISA_STIG_RHEL_08_010370 | bool
-  - enable_strategy | bool
-  - ensure_gpgcheck_never_disabled | bool
-  - high_severity | bool
-  - low_complexity | bool
-  - medium_disruption | bool
-  - no_reboot_needed | bool
 
 - name: Read permission of GPG key directory
   stat:
@@ -1630,7 +1601,9 @@
 
 - name: Set Fact - Valid fingerprints
   set_fact:
-    gpg_valid_fingerprints: ("567E347AD0044ADE55BA8A5F199E2F91FD431D51" "6A6AA7C97C8890AEC6AEBFE2F76F66C3D4082792")
+    gpg_valid_fingerprints:
+    - 567E347AD0044ADE55BA8A5F199E2F91FD431D51
+    - 6A6AA7C97C8890AEC6AEBFE2F76F66C3D4082792
   tags:
   - CCE-80795-8
   - CJIS-5.10.4.1
@@ -6627,7 +6600,7 @@
   - restrict_strategy | bool
   - '"audit" in ansible_facts.packages'
   - ansible_virtualization_type not in ["docker", "lxc", "openvz", "podman", "container"]
-  - (log_file_exists.stdout | length > 0)
+  - log_file_exists is not skipped and (log_file_exists.stdout | length > 0)
   tags:
   - CCE-80819-6
   - CJIS-5.4.1.1
@@ -6658,7 +6631,7 @@
   - restrict_strategy | bool
   - '"audit" in ansible_facts.packages'
   - ansible_virtualization_type not in ["docker", "lxc", "openvz", "podman", "container"]
-  - (log_file_exists is undefined) or (log_file_exists.stdout | length == 0)
+  - (log_file_exists is skipped) or (log_file_exists is undefined) or (log_file_exists.stdout | length == 0)
   tags:
   - CCE-80819-6
   - CJIS-5.4.1.1
@@ -6689,7 +6662,7 @@
   - restrict_strategy | bool
   - '"audit" in ansible_facts.packages'
   - ansible_virtualization_type not in ["docker", "lxc", "openvz", "podman", "container"]
-  - (log_file_line.stdout is defined) and (log_file_line.stdout | length > 0)
+  - (log_file_exists is not skipped) and (log_file_line.stdout is defined) and (log_file_line.stdout | length > 0)
   tags:
   - CCE-80819-6
   - CJIS-5.4.1.1
@@ -12389,8 +12362,8 @@
 - name: Ensure auditd Collects Information on the Use of Privileged Commands - Set List of Privileged Commands Found in Eligible
     Mount Points
   ansible.builtin.set_fact:
-    privileged_commands: '{{( result_privileged_commands_search.results | map(attribute=''stdout_lines'') | select() | list
-      ) | sum(start=[]) }}'
+    privileged_commands: '{{ privileged_commands | default([]) + item.stdout_lines }}'
+  loop: '{{ result_privileged_commands_search.results }}'
   when:
   - audit_rules_privileged_commands | bool
   - configure_strategy | bool
@@ -12400,6 +12373,7 @@
   - no_reboot_needed | bool
   - '"audit" in ansible_facts.packages'
   - ansible_virtualization_type not in ["docker", "lxc", "openvz", "podman", "container"]
+  - item is not skipped
   tags:
   - CCE-80724-8
   - CJIS-5.4.1.1
@@ -13933,7 +13907,7 @@
 - name: Configure auditd admin_space_left Action on Low Disk Space
   lineinfile:
     dest: /etc/audit/auditd.conf
-    line: admin_space_left_action = {{ var_auditd_admin_space_left_action }}
+    line: admin_space_left_action = {{ var_auditd_admin_space_left_action .split('|')[0] }}
     regexp: ^\s*admin_space_left_action\s*=\s*.*$
     state: present
     create: true
@@ -14161,7 +14135,7 @@
 - name: Configure auditd space_left Action on Low Disk Space
   lineinfile:
     dest: /etc/audit/auditd.conf
-    line: space_left_action = {{ var_auditd_space_left_action }}
+    line: space_left_action = {{ var_auditd_space_left_action.split('|')[0] }}
     regexp: ^\s*space_left_action\s*=\s*.*$
     state: present
     create: true
@@ -15150,7 +15124,7 @@
     create: true
     dest: /etc/modprobe.d/dccp.conf
     regexp: install\s+dccp
-    line: install dccp /bin/true
+    line: install dccp /bin/false
   when:
   - disable_strategy | bool
   - kernel_module_dccp_disabled | bool
@@ -15210,7 +15184,7 @@
     create: true
     dest: /etc/modprobe.d/sctp.conf
     regexp: install\s+sctp
-    line: install sctp /bin/true
+    line: install sctp /bin/false
   when:
   - DISA_STIG_RHEL_08_040023 | bool
   - disable_strategy | bool
@@ -15274,7 +15248,7 @@
     create: true
     dest: /etc/modprobe.d/bluetooth.conf
     regexp: install\s+bluetooth
-    line: install bluetooth /bin/true
+    line: install bluetooth /bin/false
   when:
   - DISA_STIG_RHEL_08_040111 | bool
   - disable_strategy | bool
